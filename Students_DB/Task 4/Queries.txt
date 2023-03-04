@@ -1,0 +1,30 @@
+create table grantees as select 
+  generate_series(1,1000000) as id,
+  md5(random()::text)::char(20) as surname,
+  md5(random()::text)::char(15) as name,
+  (random() * 100 + 99)::int as points,
+  (now() - interval '2 year' + interval '1 year' * random())::date as admission,
+  random()::int::bool as application;
+
+а) create index grantees_name_idx on grantees (name, surname);
+ 
+    select name, surname from grantees
+    where name = 'Ann';
+
+б) create index grantees_surname_idx on grantees(application) include (surname);
+   
+   select surname from grantees where application = true;
+
+
+в) create index grantees_points_idx on grantees(points)
+   where not (points > 25 and points < 50);
+
+   select *
+   from grantees
+   where points > 75;
+
+г) create index grantees_admission_idx on grantees using btree (admission);
+   select *
+   from grantees
+   where application = true
+   order by admission;

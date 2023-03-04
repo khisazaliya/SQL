@@ -1,0 +1,89 @@
+1.
+SELECT DISTINCT students.first_name, students.last_name, students.patronymic
+FROM students
+INNER JOIN additionalpoints ON students.student_id = additionalpoints.student_id 
+INNER JOIN disciplineresults ON students.student_id = disciplineresults.student_id
+WHERE additionalpoints.points > 5 AND disciplineresults.points < 86 AND discipline_id > 8
+
+
+2.
+SELECT teachers.surname, teachers.name, teachers.patronymic, students.first_name, students.last_name, students.patronymic, disciplineresults.points
+FROM students
+INNER JOIN disciplineresults on students.student_id = disciplineresults.student_id
+INNER JOIN teachers on disciplineresults.discipline_id = teachers.discipline_id
+WHERE disciplineresults.points < 56
+ORDER BY teachers.surname
+
+
+3.
+SELECT AVG(points) FROM disciplineresults
+INNER JOIN students on students.student_id = disciplineresults.student_id
+WHERE group_id BETWEEN 1 AND 5
+
+SELECT AVG(points) FROM disciplineresults
+INNER JOIN students on students.student_id = disciplineresults.student_id
+WHERE group_id BETWEEN 6 AND 8
+
+SELECT AVG(points) FROM disciplineresults
+INNER JOIN students on students.student_id = disciplineresults.student_id
+WHERE group_id BETWEEN 9 AND 12
+
+
+4.
+SELECT AVG(points), group_id FROM disciplineresults
+INNER JOIN students on students.student_id = disciplineresults.student_id
+WHERE group_id BETWEEN 9 AND 12
+GROUP BY group_id
+ORDER BY group_id
+
+5.
+SELECT AVG(points), LEFT(students.last_name, 1) FROM disciplineresults
+INNER JOIN students on students.student_id = disciplineresults.student_id
+GROUP BY LEFT(students.last_name, 1)
+ORDER BY LEFT(students.last_name, 1)
+
+
+6.
+SELECT adress FROM dormitories
+INNER JOIN dormitorywilling on dormitories.dormitory_id = dormitorywilling.dormitory_id
+INNER JOIN students on students.student_id = dormitorywilling.student_id
+INNER JOIN disciplineresults on disciplineresults.student_id = dormitorywilling.student_id
+WHERE disciplineresults.points > 80
+GROUP BY adress
+ORDER BY COUNT(DISTINCT dormitorywilling.dormitory_id)
+
+
+7.
+SELECT AVG(points), disciplines.name, teachers.surname FROM disciplineresults
+INNER JOIN disciplines on disciplines.discipline_id = disciplineresults.discipline_id
+INNER JOIN teachers on teachers.discipline_id = disciplineresults.discipline_id
+GROUP BY disciplines.name, teachers.surname
+ORDER BY  AVG(points) DESC
+
+
+8.
+SELECT AVG(points), disciplines.name, teachers.surname FROM disciplineresults
+INNER JOIN disciplines on disciplines.discipline_id = disciplineresults.discipline_id
+INNER JOIN teachers on teachers.discipline_id = disciplineresults.discipline_id
+WHERE points != (SELECT MAX(points) FROM disciplineresults) AND
+points != (SELECT MIN(points) FROM disciplineresults)
+GROUP BY disciplines.name, teachers.surname
+ORDER BY  AVG(points) DESC
+
+9.
+SELECT students.last_name, students.first_name, students.patronymic, MAX(disciplineresults.points), MIN(disciplineresults.points) FROM students
+INNER JOIN disciplineresults ON disciplineresults.student_id = students.student_id
+GROUP BY students.last_name, students.first_name, students.patronymic 
+ORDER BY students.last_name
+
+10.
+SELECT CASE
+WHEN AVG(disciplineresults.points) < 56 THEN 'Двоечники'
+WHEN AVG(disciplineresults.points) > 55 AND  AVG(disciplineresults.points) < 71 THEN 'Троечники'
+WHEN AVG(disciplineresults.points) > 70 AND  AVG(disciplineresults.points) < 86 THEN 'Ударники'
+WHEN AVG(disciplineresults.points) > 85 THEN 'Отличники'
+END AS categories, students.last_name, students.first_name
+FROM disciplineresults
+INNER JOIN students on disciplineresults.student_id = students.student_id
+GROUP BY students.last_name, students.first_name
+ORDER BY students.last_name

@@ -1,0 +1,41 @@
+1.
+SELECT students.student_id 
+FROM students
+INNER JOIN additionalpoints ON students.student_id = additionalpoints.student_id 
+WHERE additionalpoints.points > 5
+
+2.
+SELECT students.student_id, disciplineresults.discipline_id
+FROM students
+INNER JOIN disciplineresults on students.student_id = disciplineresults.student_id
+WHERE disciplineresults.passed = '2'
+
+3.
+SELECT students.student_id
+FROM students
+WHERE age(birth_date) > interval '20 years'
+
+4.
+SELECT students.birth_date
+FROM students
+WHERE students.first_name LIKE 'А%'
+
+5.
+SELECT disciplines.discipline_id
+WHERE semester = 2 (SELECT passformat = 'exam') AND semester = 1 (SELECT passformat = 'offset')
+
+6.
+SELECT students.student_id 
+FROM students
+INNER JOIN additionaldormitorypoints on students.student_id =  additionaldormitorypoints.student_id
+ORDER BY additionaldormitorypoints.points DESC LIMIT 20
+
+7.
+SELECT AVG(points) FROM disciplineresults
+INNER JOIN students on students.student_id = disciplineresults.student_id
+GROUP BY students.student_id
+
+8.
+SELECT disciplines.name FROM disciplines
+INNER JOIN disciplineresults on disciplineresults.discipline_id = disciplines.discipline_id
+GROUP BY disciplines.name HAVING MAX(disciplineresults.points) < 95

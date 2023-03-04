@@ -1,0 +1,97 @@
+CREATE TABLE Faculties(
+	faculty_id int NOT NULL PRIMARY KEY,
+	name char NOT NULL,
+	prefix char(2)
+);
+
+CREATE TABLE Groups(
+	group_id int NOT NULL PRIMARY KEY,
+	number char(2),
+	faculty_id int NOT NULL,
+	FOREIGN KEY (faculty_id) REFERENCES Faculties(faculty_id),
+	create_year date NOT NULL,
+	additional_inf varchar,
+	head_student int NOT NULL
+);
+
+CREATE TABLE Students(
+	student_id int NOT NULL PRIMARY KEY,
+	group_id int NOT NULL,
+	FOREIGN KEY (group_id) REFERENCES Groups(group_id),
+	first_name char NOT NULL,
+	last_name char NOT NULL,
+	birth_date date NOT NULL,
+	patronymic char NOT NULL,
+	passport_ser varchar(10) NOT NULL UNIQUE,
+	passport_number varchar(10) NOT NULL UNIQUE
+);
+
+ALTER TABLE Groups ADD FOREIGN KEY(head_student) REFERENCES Students;
+
+CREATE TABLE Dormitories(
+	Dormitory_id int NOT NULL PRIMARY KEY,
+	name char NOT NULL,
+	adress varchar(40)
+);
+
+CREATE TABLE DormitoryPlaces(
+	DormitoryPlace_id int NOT NULL PRIMARY KEY,
+	student_id int NOT NULL,
+	dormitory_id int NOT NULL,
+	FOREIGN KEY(student_id) REFERENCES Students(student_id),
+	FOREIGN KEY(dormitory_id) REFERENCES Dormitories(Dormitory_id)
+);
+
+CREATE TABLE DormitoryWilling(
+	DormitoryWilling_id int NOT NULL PRIMARY KEY,
+	dormitory_id int NOT NULL,
+	year date NOT NULL,
+	FOREIGN KEY(dormitory_id) REFERENCES Dormitories(Dormitory_id)
+);
+
+CREATE TABLE Disciplines(
+	discipline_id int NOT NULL PRIMARY KEY,
+	faculty_id int NOT NULL,
+	name varchar NOT NULL,
+	semester int NOT NULL,
+	year date NOT NULL,
+	FOREIGN KEY(faculty_id) REFERENCES Faculties(faculty_id)
+);
+
+CREATE TYPE passed as enum ('1', '2');
+
+CREATE TABLE DisciplineResults(
+	DisciplineResults_id int NOT NULL PRIMARY KEY,
+	discipline_id int NOT NULL,
+	student_id int NOT NULL,
+	points int,
+	passed passed,
+	CONSTRAINT CHK_Points CHECK (points>=0 AND points<=100),
+	FOREIGN KEY(student_id) REFERENCES Students(student_id),
+	FOREIGN KEY(discipline_id) REFERENCES Disciplines(discipline_id)
+);
+
+CREATE TABLE AdditionalCourses(
+	AdCourse_id int NOT NULL PRIMARY KEY,
+	student_id int NOT NULL,
+	discipline_id int NOT NULL,
+	FOREIGN KEY(student_id) REFERENCES Students(student_id),
+	FOREIGN KEY(discipline_id) REFERENCES Disciplines(discipline_id)
+);
+
+CREATE TABLE AdditionalPoints(
+	AdPoints_id int NOT NULL PRIMARY KEY,
+	student_id int NOT NULL,
+	year date NOT NULL,
+	semester int NOT NULL,
+	points int,
+	FOREIGN KEY(student_id) REFERENCES Students(student_id)
+);
+
+CREATE TABLE AdditionalDormitoryPoints(
+	AdDormPoints_id int NOT NULL PRIMARY KEY,
+	student_id int NOT NULL,
+	year date NOT NULL,
+	points int,
+	FOREIGN KEY(student_id) REFERENCES Students(student_id)
+);
